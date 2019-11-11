@@ -6,6 +6,7 @@ public class CreateScene : MonoBehaviour
 {
     public GameObject robotBase;
     public GameObject armPart;
+    public GameObject armJoint;
     public GameObject armEnd;
 
     public GameObject obstacle;
@@ -26,11 +27,17 @@ public class CreateScene : MonoBehaviour
         GameObject lastArm = robotBase;
         for (int i = 0; i < N; i++)
         {
-            GameObject nextArm = Instantiate(armPart, new Vector3(0, i*0.4f, 0), Quaternion.identity);
+            GameObject nextArm = Instantiate(armPart, new Vector3(0, i*0.4f+0.2f, 0), Quaternion.identity);
             nextArm.transform.parent = lastArm.transform;
+            GameObject joint = Instantiate(
+                armJoint, 
+                new Vector3(0, i*0.4f+0.2f, 0), 
+                Quaternion.Euler(i%3!=1?0:90, i%3!=0?0:90, i%3!=2?0:90)
+            );
+            joint.transform.parent = lastArm.transform;
             lastArm = nextArm;
         }
-        GameObject armEndgo = Instantiate(armEnd, new Vector3(0, N*0.4f, 0), Quaternion.identity);
+        GameObject armEndgo = Instantiate(armEnd, new Vector3(0, N*0.4f+0.2f, 0), Quaternion.identity);
         armEndgo.transform.parent = lastArm.transform;
     }
 

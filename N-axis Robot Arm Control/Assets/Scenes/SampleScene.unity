@@ -544,7 +544,7 @@ MonoBehaviour:
   obstacle: {fileID: 1552268594749977056, guid: 7245aac86d704cec48f32b1ee5939f42,
     type: 3}
   qtdObstacle: 15
-  N: 5
+  N: 10
 --- !u!1 &1278722979
 GameObject:
   m_ObjectHideFlags: 0
@@ -630,7 +630,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1278722979}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.07, y: 1.94, z: -0.07}
+  m_LocalPosition: {x: -1.66, y: 0.77, z: -2.5}
   m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_Children: []
   m_Father: {fileID: 0}

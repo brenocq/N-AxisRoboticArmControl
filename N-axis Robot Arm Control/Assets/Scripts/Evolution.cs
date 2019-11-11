@@ -6,9 +6,11 @@ public class Evolution : MonoBehaviour
 {
     public GameObject robot;
     public GameObject goal;
+    public GameObject testCube;
+    private GameObject testing;
     private GameObject armEnd;
-    private List<Vector3> robotState = new List<Vector3>();
-    private List<List<Vector3> > popStates = new List<List<Vector3> >();
+    private List<float> robotState = new List<float>();
+    private List<List<float> > popStates = new List<List<float> >();
     private bool robotCreated = false;
 
     //---------- Evolution parameters ----------// 
@@ -17,22 +19,25 @@ public class Evolution : MonoBehaviour
     public float maxStep;
     public bool colliding=false;
 
+    //---------- Forward Kinematics ----------//
+    private float distGround = 0.2f;
+    private float distJoints = 0.4f;
+
     void Awake(){
         N = GetComponent<CreateScene>().N;
     }
 
     void Start(){
         for (int i = 0; i < N; i++){
-            robotState.Add(new Vector3(0,0,0));
+            robotState.Add(0);
         }
         
         for(int i=0; i<popSize; i++){
-            popStates.Add(new List<Vector3>());
+            popStates.Add(new List<float>());
             for (int j= 0; j < N; j++){
-                float x = Random.Range(-maxStep+robotState[j].x, maxStep+robotState[j].x);
-                float y = Random.Range(-maxStep+robotState[j].y, maxStep+robotState[j].y);
-                float z = Random.Range(-maxStep+robotState[j].z, maxStep+robotState[j].z);
-                popStates[i].Add(new Vector3(x,y,z));
+                float angle = Random.Range(-maxStep+robotState[j], maxStep+robotState[j]);
+
+                popStates[i].Add(angle);
             }
         }
     }
@@ -49,64 +54,76 @@ public class Evolution : MonoBehaviour
                 lastPiece = lastPiece.transform.GetChild(1).gameObject;
             }
             armEnd = lastPiece.transform.GetChild(1).gameObject;
-        }
 
+            testing = Instantiate(testCube, new Vector3(0, 0, 0), Quaternion.identity);
+        }
+        //robotCreated = false;
         if(robotCreated){
             int bestInd = -1;
-            float bestFitness = 10;
+            float bestFitness = 1000;// inf
 
             for (int i = 0; i < popSize; i++){
                 GameObject lastPiece = robot.transform.GetChild(1).gameObject;
 
                 // Test individual arm position
                 for(int j=0; j<N; j++){
-                    lastPiece.transform.rotation = Quaternion.Euler(popStates[i][j].x, popStates[i][j].y, popStates[i][j].z);                    
+                    lastPiece.transform.localRotation = Quaternion.Euler(
+                         j%3!=2?0:popStates[i][j],
+                         j%3!=0?0:-popStates[i][j],
+                         j%3!=1?0:popStates[i][j]
+                        );
                     lastPiece = lastPiece.transform.GetChild(1).gameObject;
                 }
                 
                 // Check collisions
-                lastPiece = robot.transform.GetChild(1).gameObject;
+                /*lastPiece = robot.transform.GetChild(1).gameObject;
                 colliding=false;
                 for(int j=0; j<N; j++){
                     if(lastPiece.GetComponent<CheckCollision>().colliding==true){
                         colliding=true;
                     }
                     lastPiece = lastPiece.transform.GetChild(1).gameObject;
-                }
+                }*/
 
-                // Calculate fitness
-                /*if(colliding==true){
-                    continue;
-                }else */if(distToGoal()<=bestFitness){
+                float[] d01 = new float {{0},{0},{distGround}};
+                float theta0 = robotState[0]*Mathf.PI/180.0f;
+                float[] r01 = new float {{Mathf.Cos(theta0), 0, Mathf.Sin(theta0)},
+                                         {Mathf.Sin(theta0),0,-Mathf.Cos(theta0)},
+                                         {0, -1, 0}};
+
+                testing.transform.position = new Vector3(0,0.4f,0);
+
+                if(distToGoal()<=bestFitness){
                     bestInd = i;
                     bestFitness = distToGoal();
                 }
             }
+            
+            
+
             newPopulation(bestInd);
         }
     }
 
     void newPopulation(int bestInd){
         Debug.Log("best: "+bestInd);
-        if(bestInd==-1){
+        /*if(bestInd==-1){
             GameObject lastPiece = robot.transform.GetChild(1).gameObject;
             for(int j=0; j<N; j++){
                 lastPiece.transform.rotation = Quaternion.Euler(robotState[j].x, robotState[j].y, robotState[j].z);                    
                 lastPiece = lastPiece.transform.GetChild(1).gameObject;
             }
             return;
-        }
+        }*/
 
         for (int i = 0; i < N; i++){
             robotState = popStates[bestInd];
         }
 
-        for(int i=1; i<popSize; i++){
+        for(int i=0; i<popSize; i++){
             for (int j= 0; j < N; j++){
-                float x = Random.Range(-maxStep+robotState[j].x, maxStep+robotState[j].x);
-                float y = Random.Range(-maxStep+robotState[j].y, maxStep+robotState[j].y);
-                float z = Random.Range(-maxStep+robotState[j].z, maxStep+robotState[j].z);
-                popStates[i][j] = new Vector3(x,y,z);
+                float angle = Random.Range(-maxStep+robotState[j], maxStep+robotState[j]);
+                popStates[i][j] = angle;
             }
         }
     }
