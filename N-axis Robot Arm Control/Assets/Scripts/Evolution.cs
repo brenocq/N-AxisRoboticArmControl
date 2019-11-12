@@ -31,6 +31,9 @@ public class Evolution : MonoBehaviour
         for (int i = 0; i < N; i++){
             robotState.Add(0);
         }
+        robotState[0]=0;
+        robotState[1]=0;
+        robotState[2]=0;
         
         for(int i=0; i<popSize; i++){
             popStates.Add(new List<float>());
@@ -70,7 +73,7 @@ public class Evolution : MonoBehaviour
                     lastPiece.transform.localRotation = Quaternion.Euler(
                          j%3!=2?0:popStates[i][j],
                          j%3!=0?0:-popStates[i][j],
-                         j%3!=1?0:popStates[i][j]
+                         j%3!=1?0:-popStates[i][j]
                         );
                     lastPiece = lastPiece.transform.GetChild(1).gameObject;
                 }
@@ -85,28 +88,55 @@ public class Evolution : MonoBehaviour
                     lastPiece = lastPiece.transform.GetChild(1).gameObject;
                 }*/
 
-                float[] d01 = new float {{0},{0},{distGround}};
                 float theta0 = robotState[0]*Mathf.PI/180.0f;
-                float[] r01 = new float {{Mathf.Cos(theta0), 0, Mathf.Sin(theta0)},
-                                         {Mathf.Sin(theta0),0,-Mathf.Cos(theta0)},
-                                         {0, -1, 0}};
+                float theta1 = robotState[1]*Mathf.PI/180.0f;
+                float theta2 = robotState[2]*Mathf.PI/180.0f;
 
-                testing.transform.position = new Vector3(0,0.4f,0);
+                /*float[,] h01 = new float[4,4] {{-Mathf.Sin(theta0), 0, Mathf.Cos(theta0), 0},
+                                               { Mathf.Cos(theta0), 0, Mathf.Sin(theta0), 0},
+                                               {0, 1, 0, distJoints},
+                                               {0, 0, 0, 1}};
+                float[,] h01 = new float[4,4] {{Mathf.Cos(theta0), 0, Mathf.Sin(theta0), 0},
+                                               {Mathf.Sin(theta0), 0, -Mathf.Cos(theta0), 0},
+                                               {0, 1, 0, distJoints},
+                                               {0, 0, 0, 1}};
+
+                //float theta1 = robotState[1]*Mathf.PI/180.0f;
+                
+                float[,] h12 = new float[4,4] {{-Mathf.Sin(theta1), 0, -Mathf.Cos(theta1), distJoints*Mathf.Sin(theta1)},
+                                               { Mathf.Cos(theta1), 0, -Mathf.Sin(theta1), distJoints*Mathf.Cos(theta1)},
+                                               {0, -1, 0, 0},
+                                               {0, 0, 0, 1}};
+
+                float[,] h12 = new float[4,4] {{Mathf.Cos(theta1), 0, Mathf.Sin(theta1), -distJoints*Mathf.Cos(theta1)},
+                                               {Mathf.Sin(theta1), 0, -Mathf.Cos(theta1), -distJoints*Mathf.Sin(theta1)},
+                                               {0, 1, 0, 0},
+                                               {0, 0, 0, 1}};
+
+                float[,] h02 = dot(h01, h12);*/
+
+                float d = distJoints;
+                float g = distGround;
+
+                float dY = g+d + d*Mathf.Cos(theta1) + d*Mathf.Cos(theta1)*Mathf.Cos(theta2);
+                //float dX = d*Mathf.Cos(theta0)*Mathf.Sin(theta1) + d*Mathf.Cos(theta0)*Mathf.Sin(theta1)*Mathf.Cos(theta2) + d*Mathf.Sin(theta0)*d*Mathf.Sin(theta1);
+                float dX = d*Mathf.Cos(theta0)*Mathf.Sin(theta1) + d*Mathf.Cos(theta0)*Mathf.Sin(theta1)*Mathf.Cos(theta2) - d*Mathf.Sin(theta0)*Mathf.Sin(theta2);
+                float dZ = d*Mathf.Sin(theta0)*Mathf.Sin(theta1) + d*Mathf.Sin(theta0)*Mathf.Sin(theta1)*Mathf.Cos(theta2) + d*Mathf.Cos(theta0)*Mathf.Sin(theta2);
+
+                testing.transform.position = new Vector3(dX,dY,dZ);
+                //testing.transform.position = new Vector3(h02[0,3],h02[2,3]+distGround,h02[1,3]);
 
                 if(distToGoal()<=bestFitness){
                     bestInd = i;
                     bestFitness = distToGoal();
                 }
             }
-            
-            
 
             newPopulation(bestInd);
         }
     }
 
     void newPopulation(int bestInd){
-        Debug.Log("best: "+bestInd);
         /*if(bestInd==-1){
             GameObject lastPiece = robot.transform.GetChild(1).gameObject;
             for(int j=0; j<N; j++){
@@ -121,7 +151,7 @@ public class Evolution : MonoBehaviour
         }
 
         for(int i=0; i<popSize; i++){
-            for (int j= 0; j < N; j++){
+            for (int j = 0; j < N; j++){
                 float angle = Random.Range(-maxStep+robotState[j], maxStep+robotState[j]);
                 popStates[i][j] = angle;
             }
@@ -132,5 +162,21 @@ public class Evolution : MonoBehaviour
         Vector3 robotP = armEnd.transform.position;
         Vector3 goalP = goal.transform.position;
         return Vector3.Distance(robotP, goalP);
+    }
+
+    float[,] dot(float[,] A, float[,] B){
+        float[,] C = new float[4,4];
+
+        float temp;
+        for (int i = 0; i < 4; i++){
+            for (int j = 0; j < 4; j++){
+                temp = 0;
+                for (int k = 0; k < 4; k++){
+                    temp += A[i, k] + B [k, j];
+                }
+                C[i, j] = temp;
+            }
+        }
+        return C;
     }
 }
