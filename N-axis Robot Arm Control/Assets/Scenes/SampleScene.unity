@@ -349,7 +349,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 534669902}
   m_LocalRotation: {x: 0.34735227, y: -0, z: -0, w: 0.9377348}
-  m_LocalPosition: {x: 0, y: 2.91, z: -3.74}
+  m_LocalPosition: {x: 0, y: 3.1, z: -3.71}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -525,8 +525,8 @@ MonoBehaviour:
   goal: {fileID: 1278722979}
   testCube: {fileID: 6437066869830766696, guid: 1645d5a837e828cbeb93bbe030aa1460,
     type: 3}
-  popSize: 10
-  maxStep: 0.5
+  popSize: 4
+  maxStep: 2
   colliding: 0
 --- !u!114 &1082612864
 MonoBehaviour:
@@ -548,7 +548,7 @@ MonoBehaviour:
   obstacle: {fileID: 1552268594749977056, guid: 7245aac86d704cec48f32b1ee5939f42,
     type: 3}
   qtdObstacle: 0
-  N: 3
+  N: 6
 --- !u!1 &1278722979
 GameObject:
   m_ObjectHideFlags: 0
@@ -634,7 +634,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1278722979}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 2, z: 0}
+  m_LocalPosition: {x: -0.99, y: 2, z: 0.22}
   m_LocalScale: {x: 0.15, y: 0.15, z: 0.15}
   m_Children: []
   m_Father: {fileID: 0}

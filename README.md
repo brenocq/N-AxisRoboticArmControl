@@ -1,7 +1,7 @@
 # N-Axis Robotic Arm Control
 
 <p align="center">
-<img src="./img/followBall-v1.gif" height="200">
+<img src="./img/followBall-v2.gif" height="200">
 </p>
 
 ## Introduction
