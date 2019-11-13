@@ -21,7 +21,6 @@ This project was made using Unity Engine. To run the simulations and edit this p
 
 ## Future work
 - Avoid obstacles
-- Set the axis of freedom of each joint to look more like real robotic arms
 - Calculate current position with joint angles
 - User interface to move the ball and change arm parameters
 - Web application
