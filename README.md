@@ -24,3 +24,6 @@ This project was made using Unity Engine. To run the simulations and edit this p
 - Calculate current position with joint angles
 - User interface to move the ball and change arm parameters
 - Web application
+
+## License
+This code is released under MIT license.
